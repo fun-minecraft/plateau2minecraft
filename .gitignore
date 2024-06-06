@@ -163,3 +163,8 @@ cython_debug/
 #.idea/
 
 
+# Macで生成されるファイルを無視する
+.DS_Store
+
+# 読み込み先となるディレクトリを無視する
+data/
