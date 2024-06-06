@@ -162,4 +162,8 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
+# Macで生成されるファイルを無視する
+.DS_Store
 
+# 読み込み先となるディレクトリを無視する
+data/
