@@ -91,3 +91,5 @@ poetry run python -m plateau2minecraft --target data/13100_tokyo23-ku_2022_cityg
 
 - `src/plateau2minecraft/anvil`は[anvil-parser](https://github.com/WoutCherlet/anvil-parser)を利用しています
 - `src/plateau2minecraft/earcut`は[earcut-py](https://github.com/MIERUNE/earcut-py)を利用しています
+
+時々入っているhogehoge2.pyのようなファイルはコメントアウトしたコピーのファイルなのであってもなくても動作は変わりません。

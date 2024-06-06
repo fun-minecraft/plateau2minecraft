@@ -1,0 +1,2 @@
+# 筑波大学附属病院が入ってるデータ
+python3 -m plateau2minecraft --target data/08220_tsukuba-shi_2022_citygml_1_op/udx/bldg/54401018_bldg_6697_op.gml --output data/output
