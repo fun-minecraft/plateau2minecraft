@@ -2,17 +2,36 @@ import argparse
 import logging
 from pathlib import Path
 
+import trimesh
+
 from plateau2minecraft.converter import Minecraft
 from plateau2minecraft.impart_color import assign
 from plateau2minecraft.merge_points import merge
 from plateau2minecraft.parser import get_triangle_meshs
 from plateau2minecraft.voxelizer import voxelize
 
+import numpy as np
+import matplotlib.pyplot as plt
+
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 
 def _extract_feature_type(file_path: str) -> str:
     return file_path.split("/")[-1].split("_")[1]
+
+
+# ポイントをプロットする関数
+def _make_plot(point_cloud: trimesh.points.PointCloud) -> None:
+    fig = plt.figure(figsize=(10, 10))
+    ax = fig.add_subplot(111, projection='3d')
+
+    # 点群をプロット
+    ax.scatter(point_cloud.vertices[:,0],point_cloud.vertices[:,1],point_cloud.vertices[:,2],c=[( 0.0 , 0.0 , 0.0 , 1.0 )]) # 点の大きさ
+
+    ax.set_xlabel('X')
+    ax.set_ylabel('Y')
+    ax.set_zlabel('Z')
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -47,3 +66,4 @@ if __name__ == "__main__":
 
     logging.info(f"To : {args.target}")
     region = Minecraft(merged).build_region(args.output)
+    # _make_plot(point_cloud)

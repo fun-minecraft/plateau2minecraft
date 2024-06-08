@@ -237,7 +237,8 @@ def _sampling(submesh: Trimesh) -> np.ndarray:
 
     vertices, faces = subdivide_to_size(submesh.vertices, submesh.faces, 5.0)
     mesh = Trimesh(vertices=vertices, faces=faces)
-    voxel = mesh.voxelized(1).hollow()
+    voxel = mesh.voxelized(0.2).hollow()
+    # voxel = mesh.voxelized(1).hollow()
     points = voxel.points
     return np.asarray(points)
 
