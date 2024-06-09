@@ -61,7 +61,7 @@ def _load_polygons(doc, obj_path: str) -> list[list[np.ndarray]]:
     polygons = []
     for obj in doc.iterfind(obj_path, _NS):
         found = False
-        for lod in [2, 1]:
+        for lod in [3, 2, 1]:  # Prioritize LOD3, then LOD2, and finally LOD1
             for polygon_path in [
                 f".//bldg:lod{lod}MultiSurface//gml:Polygon",
                 f".//bldg:lod{lod}Geometry//gml:Polygon",
@@ -90,9 +90,12 @@ def _load_polygons(doc, obj_path: str) -> list[list[np.ndarray]]:
                         rings.append(vertices)
                     polygons.append(rings)
                     found = True
+
             if found:
                 break
+
     return polygons
+
 
 # ポリゴンデータを三角形メッシュに変換する関数
 def _triangulate(polygons: list[list[np.ndarray]]) -> TriangleMesh:
