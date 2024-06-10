@@ -8,6 +8,8 @@ from trimesh.points import PointCloud
 from .anvil import Block, EmptyRegion
 from .anvil.errors import OutOfBoundsCoordinates
 
+from plateau2minecraft.feature_color import block_colors
+
 
 class Minecraft:
     def __init__(self, point_cloud: PointCloud) -> None:
@@ -48,6 +50,7 @@ class Minecraft:
 
     def build_region(self, output: Path, origin: tuple[float, float, float] | None = None) -> None:
         points = np.asarray(self.point_cloud.vertices)
+        points_colors = np.asarray(self.point_cloud.colors)
 
         origin_point = self._get_world_origin(points) if origin is None else origin
         print(f"origin_point: {origin_point}")
@@ -65,7 +68,7 @@ class Minecraft:
         blocks = self._split_point_cloud(points)
         standardized_blocks = self._standardize_vertices(blocks)
 
-        stone = Block("minecraft", "stone")
+        stone = Block("minecraft", "grass")
 
         # data/output/world_data/region/フォルダの中身を削除
         # フォルダが存在しない場合は、フォルダを作成する
@@ -79,10 +82,11 @@ class Minecraft:
         for block_id, points in standardized_blocks.items():
             region = EmptyRegion(0, 0)
             points = np.asarray(points).astype(int)
-            for row in points:
+            for i, row in enumerate(points):
                 x, y, z = row
                 try:
-                    region.set_block(stone, x, z, y) # MinecraftとはY-UPの右手系なので、そのように変数を定義する
+                    # region.set_block(Block("minecraft", block_colors[points_colors[i]]), x, z, y) # MinecraftとはY-UPの右手系なので、そのように変数を定義する
+                    region.set_block(Block("minecraft", block_colors[tuple(points_colors[i])[0:3]]), x, z, y)
                 except OutOfBoundsCoordinates:
                     continue
             print(f"save: {block_id}")

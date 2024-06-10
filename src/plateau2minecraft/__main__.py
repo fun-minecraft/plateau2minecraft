@@ -33,6 +33,39 @@ def _make_plot(point_cloud: trimesh.points.PointCloud) -> None:
     ax.set_zlabel('Z')
     plt.show()
 
+_XPATH_LIST = {
+    "bldg": [
+        # ".//bldg:Building",
+        ".//bldg:WallSurface",
+        ".//bldg:RoofSurface",
+        ".//bldg:GroundSurface",
+        ".//bldg:OuterFloorSurface",
+        ".//bldg:OuterCeilingSurface",
+        ".//bldg:ClosureSurface",
+        ".//bldg:BuildingInstallation",
+        ".//bldg:Window",
+        ".//bldg:Door",
+    ],
+    "tran": [".//tran:Road", ".//tran:TrafficArea"],
+    "brid": [
+        ".//brid:Bridge",
+        ".//brid:BridgePart",
+        ".//brid:RoofSurface",
+        ".//brid:GroundSurface",
+        ".//brid:WallSurface",
+        ".//brid:ClosureSurface",
+        ".//brid:OuterFloorSurface",
+        ".//brid:OuterCeilingSurface",
+        ".//brid:BridgeConstructionElement",
+        ".//brid:OuterBridgeInstallation",
+        ".//brid:Door",
+        ".//brid:Window",
+        ".//brid:IntBridgeInstallation",
+        ".//brid:BridgeFurniture",
+    ],
+    "frn": [".//frn:CityFurniture"],
+    "veg": [".//veg:PlantCover", ".//veg:SolitaryVegetationObject"],
+}
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
@@ -51,15 +84,22 @@ if __name__ == "__main__":
         logging.info(f"Processing start: {file_path}")
         feature_type = _extract_feature_type(str(file_path))
 
-        logging.info(f"Triangulation: {file_path}")
-        triangle_mesh = get_triangle_meshs(file_path, feature_type)
+        for obj_path in _XPATH_LIST[feature_type]:
+            logging.info(f"Object path: {obj_path}")
 
-        logging.info(f"Voxelize: {file_path}")
-        point_cloud = voxelize(triangle_mesh)
-        point_cloud = assign(point_cloud, feature_type)
 
-        point_cloud_list.append(point_cloud)
-        logging.info(f"Processing end: {file_path}")
+            logging.info(f"Triangulation: {obj_path}")
+            triangle_mesh = get_triangle_meshs(file_path, obj_path)
+
+            logging.info(f"Voxelize: {file_path}")
+            # print(triangle_mesh.triangles)
+            if len(triangle_mesh.triangles) == 0:
+                continue
+            point_cloud = voxelize(triangle_mesh)
+            point_cloud = assign(point_cloud, obj_path)
+
+            point_cloud_list.append(point_cloud)
+            logging.info(f"Processing end: {file_path}")
 
     logging.info(f"Merging: {args.target}")
     merged = merge(point_cloud_list)

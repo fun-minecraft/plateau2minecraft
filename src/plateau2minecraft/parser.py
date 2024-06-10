@@ -25,12 +25,12 @@ _XPATH_LIST = {
         ".//bldg:WallSurface",
         ".//bldg:RoofSurface",
         ".//bldg:GroundSurface",
-        # ".//bldg:OuterFloorSurface",
-        # ".//bldg:OuterCeilingSurface",
-        # ".//bldg:ClosureSurface",
-        # ".//bldg:BuildingInstallation",
-        # ".//bldg:Window",
-        # ".//bldg:Door",
+        ".//bldg:OuterFloorSurface",
+        ".//bldg:OuterCeilingSurface",
+        ".//bldg:ClosureSurface",
+        ".//bldg:BuildingInstallation",
+        ".//bldg:Window",
+        ".//bldg:Door",
     ],
     "tran": [".//tran:Road", ".//tran:TrafficArea"],
     "brid": [
@@ -54,14 +54,15 @@ _XPATH_LIST = {
 }
 
 # 座標変換用の変換器
-transformer = pyproj.Transformer.from_crs("epsg:6697", "epsg:3857", always_xy=True)
+transformer = pyproj.Transformer.from_crs("epsg:6697", "epsg:3857", always_xy=True)              
 
 # CityGMLファイルからポリゴンデータを読み込む関数
 def _load_polygons(doc, obj_path: str) -> list[list[np.ndarray]]:
     polygons = []
+    dic = {}
     for obj in doc.iterfind(obj_path, _NS):
         found = False
-        for lod in [3, 2, 1]:  # Prioritize LOD3, then LOD2, and finally LOD1
+        for lod in [3]:  # Prioritize LOD3, then LOD2, and finally LOD1
             for polygon_path in [
                 f".//bldg:lod{lod}MultiSurface//gml:Polygon",
                 f".//bldg:lod{lod}Geometry//gml:Polygon",
@@ -90,10 +91,16 @@ def _load_polygons(doc, obj_path: str) -> list[list[np.ndarray]]:
                         rings.append(vertices)
                     polygons.append(rings)
                     found = True
+                    # if obj.attrib['{http://www.opengis.net/gml}id'] not in dic:
+                    #     dic[obj.attrib['{http://www.opengis.net/gml}id']] = 1
+                    # else:
+                    #     dic[obj.attrib['{http://www.opengis.net/gml}id']] += 1
 
             if found:
                 break
 
+    # dic_sorted = sorted(dic.items(), key=lambda x:x[1])
+    # print(dic_sorted[:10])
     return polygons
 
 
@@ -131,26 +138,24 @@ def _triangulate(polygons: list[list[np.ndarray]]) -> TriangleMesh:
     return TriangleMesh(vertices, triangles)
 
 # 指定されたCityGMLファイルから三角形メッシュを取得する関数
-def get_triangle_meshs(file_path: Path, feature_type: str) -> TriangleMesh:
-    obj_paths = _XPATH_LIST[feature_type]
+def get_triangle_meshs(file_path: Path, obj_path) -> TriangleMesh:
 
     doc = et.parse(file_path, None)
 
     triangles = []
     vertices = []
     max_index = 0
-    for obj_path in obj_paths:
-        polygons = _load_polygons(doc, obj_path)
+    polygons = _load_polygons(doc, obj_path)
 
-        if polygons:
-            triangle_mesh = _triangulate(polygons)
+    if polygons:
+        triangle_mesh = _triangulate(polygons)
 
-            vertices.extend(triangle_mesh.vertices)
+        vertices.extend(triangle_mesh.vertices)
 
-            t = np.asarray(triangle_mesh.triangles, dtype=np.int32)
-            t += max_index
-            triangles.extend(t)
+        t = np.asarray(triangle_mesh.triangles, dtype=np.int32)
+        t += max_index
+        triangles.extend(t)
 
-            max_index = np.asarray(triangles).max() + 1
+        max_index = np.asarray(triangles).max() + 1
 
     return TriangleMesh(vertices, triangles)
