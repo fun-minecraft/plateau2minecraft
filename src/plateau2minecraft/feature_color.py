@@ -95,6 +95,6 @@ block_colors = {
     (0, 255, 255): "cyan_wool",
     (255, 255, 255): "white_wool",
     (0, 0, 0): "black_wool",
-    (128, 128, 128): "gray_wool",
+    (128, 128, 128): "glass",
     (129, 129, 129): "light_gray_wool",
 }

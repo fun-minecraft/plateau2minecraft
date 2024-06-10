@@ -35,7 +35,7 @@ def _make_plot(point_cloud: trimesh.points.PointCloud) -> None:
 
 _XPATH_LIST = {
     "bldg": [
-        # ".//bldg:Building",
+        ".//bldg:Building",
         ".//bldg:WallSurface",
         ".//bldg:RoofSurface",
         ".//bldg:GroundSurface",
@@ -84,7 +84,7 @@ if __name__ == "__main__":
         logging.info(f"Processing start: {file_path}")
         feature_type = _extract_feature_type(str(file_path))
 
-        for obj_path in _XPATH_LIST[feature_type]:
+        for obj_path in reversed(_XPATH_LIST[feature_type]):
             logging.info(f"Object path: {obj_path}")
 
 
@@ -92,10 +92,11 @@ if __name__ == "__main__":
             triangle_mesh = get_triangle_meshs(file_path, obj_path)
 
             logging.info(f"Voxelize: {file_path}")
-            # print(triangle_mesh.triangles)
+
             if len(triangle_mesh.triangles) == 0:
                 continue
             point_cloud = voxelize(triangle_mesh)
+            print(obj_path)
             point_cloud = assign(point_cloud, obj_path)
 
             point_cloud_list.append(point_cloud)

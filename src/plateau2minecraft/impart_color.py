@@ -7,9 +7,7 @@ import numpy as np
 
 
 def assign(point_cloud: PointCloud, obj_path: str) -> PointCloud:
-    # colors = np.random.randint(0, 3, size=len(point_cloud.vertices))
-    # color_choices = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]
-    # colors = np.array([color_choices[c] for c in colors])
+    # colors = np.array([(255, 0, 0) for _ in range(len(point_cloud.vertices))])
     # point_cloud.colors = colors
     list_obj = {
         ".//bldg:Building": (255, 0, 0),

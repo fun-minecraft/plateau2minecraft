@@ -62,7 +62,7 @@ def _load_polygons(doc, obj_path: str) -> list[list[np.ndarray]]:
     dic = {}
     for obj in doc.iterfind(obj_path, _NS):
         found = False
-        for lod in [3]:  # Prioritize LOD3, then LOD2, and finally LOD1
+        for lod in [1]:  # Prioritize LOD3, then LOD2, and finally LOD1
             for polygon_path in [
                 f".//bldg:lod{lod}MultiSurface//gml:Polygon",
                 f".//bldg:lod{lod}Geometry//gml:Polygon",
