@@ -87,14 +87,14 @@ blocks = {
 
 
 block_colors = {
-    (255, 0, 0): "stone",
-    (0, 255, 0): "grass_block",
-    (0, 0, 255): "diamond_block",
-    (255, 255, 0): "gold_block",
+    (255, 0, 0): "smooth_stone",
+    (0, 255, 0): "white_wool",
+    (0, 0, 255): "orange_wool",
+    (255, 255, 0): "magenta_wool",
     (255, 0, 255): "blue_wool",
     (0, 255, 255): "cyan_wool",
     (255, 255, 255): "white_wool",
-    (0, 0, 0): "black_wool",
+    (0, 0, 0): "red_wool",
     (128, 128, 128): "glass",
     (129, 129, 129): "light_gray_wool",
 }

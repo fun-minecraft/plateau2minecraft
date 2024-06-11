@@ -57,12 +57,12 @@ _XPATH_LIST = {
 transformer = pyproj.Transformer.from_crs("epsg:6697", "epsg:3857", always_xy=True)              
 
 # CityGMLファイルからポリゴンデータを読み込む関数
-def _load_polygons(doc, obj_path: str) -> list[list[np.ndarray]]:
+def _load_polygons(doc, obj_path: str, lods: list) -> list[list[np.ndarray]]:
     polygons = []
     dic = {}
     for obj in doc.iterfind(obj_path, _NS):
         found = False
-        for lod in [1]:  # Prioritize LOD3, then LOD2, and finally LOD1
+        for lod in lods:  # Prioritize LOD3, then LOD2, and finally LOD1
             for polygon_path in [
                 f".//bldg:lod{lod}MultiSurface//gml:Polygon",
                 f".//bldg:lod{lod}Geometry//gml:Polygon",
@@ -138,14 +138,14 @@ def _triangulate(polygons: list[list[np.ndarray]]) -> TriangleMesh:
     return TriangleMesh(vertices, triangles)
 
 # 指定されたCityGMLファイルから三角形メッシュを取得する関数
-def get_triangle_meshs(file_path: Path, obj_path) -> TriangleMesh:
+def get_triangle_meshs(file_path: Path, obj_path: str, lods: list) -> TriangleMesh:
 
     doc = et.parse(file_path, None)
 
     triangles = []
     vertices = []
     max_index = 0
-    polygons = _load_polygons(doc, obj_path)
+    polygons = _load_polygons(doc, obj_path, lods)
 
     if polygons:
         triangle_mesh = _triangulate(polygons)

@@ -79,17 +79,26 @@ if __name__ == "__main__":
     parser.add_argument("--output", required=True, type=Path, help="output folder")
     args = parser.parse_args()
 
+    lods = [3, 2, 1]
+    reversed_lods = False
+
     point_cloud_list = []
     for file_path in args.target:
         logging.info(f"Processing start: {file_path}")
         feature_type = _extract_feature_type(str(file_path))
 
-        for obj_path in reversed(_XPATH_LIST[feature_type]):
+        # もし逆順であればリバースする Falseであればそのまま
+        if reversed_lods:
+            generate_obj_path = reversed(_XPATH_LIST[feature_type])
+        else:
+            generate_obj_path = _XPATH_LIST[feature_type]
+
+        for obj_path in generate_obj_path:
             logging.info(f"Object path: {obj_path}")
 
 
             logging.info(f"Triangulation: {obj_path}")
-            triangle_mesh = get_triangle_meshs(file_path, obj_path)
+            triangle_mesh = get_triangle_meshs(file_path, obj_path, lods)
 
             logging.info(f"Voxelize: {file_path}")
 
